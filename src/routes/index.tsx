@@ -93,7 +93,7 @@ function TodayPage() {
                     <Button
                       variant="secondary"
                       onClick={() =>
-                        setTarget({ pc: entries[0].pc, id: entries[0].id, at: entries[0].at })
+                        setTarget({ pc: entries[0]!.pc, id: entries[0]!.id, at: entries[0]!.at })
                       }
                     >
                       Add manual entry
@@ -207,8 +207,9 @@ function TodayPage() {
         open={!!target}
         onClose={() => setTarget(null)}
         pc={target?.pc ?? null}
-        scheduledEntryId={target?.id}
-        scheduledAt={target?.at}
+        scheduledEntryId={target?.id ?? null}
+        scheduledAt={target?.at ?? null}
+
         onLogged={() => setConfirmation("Dose logged")}
       />
 

@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as SitesRouteImport } from './routes/sites'
+import { Route as VialsRouteImport } from './routes/vials'
 import { Route as LibraryIndexRouteImport } from './routes/library.index'
 import { Route as LibraryCompoundIdRouteImport } from './routes/library.$compoundId'
 import { Route as ProtocolsIndexRouteImport } from './routes/protocols.index'
@@ -31,6 +34,21 @@ const CalculatorRoute = CalculatorRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitesRoute = SitesRouteImport.update({
+  id: '/sites',
+  path: '/sites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VialsRoute = VialsRouteImport.update({
+  id: '/vials',
+  path: '/vials',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LibraryIndexRoute = LibraryIndexRouteImport.update({
@@ -63,6 +81,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/progress': typeof ProgressRoute
+  '/sites': typeof SitesRoute
+  '/vials': typeof VialsRoute
   '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
@@ -73,6 +94,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/progress': typeof ProgressRoute
+  '/sites': typeof SitesRoute
+  '/vials': typeof VialsRoute
   '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
@@ -84,6 +108,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/progress': typeof ProgressRoute
+  '/sites': typeof SitesRoute
+  '/vials': typeof VialsRoute
   '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
@@ -96,6 +123,9 @@ export interface FileRouteTypes {
     | '/'
     | '/calculator'
     | '/onboarding'
+    | '/progress'
+    | '/sites'
+    | '/vials'
     | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
@@ -106,6 +136,9 @@ export interface FileRouteTypes {
     | '/'
     | '/calculator'
     | '/onboarding'
+    | '/progress'
+    | '/sites'
+    | '/vials'
     | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
@@ -116,6 +149,9 @@ export interface FileRouteTypes {
     | '/'
     | '/calculator'
     | '/onboarding'
+    | '/progress'
+    | '/sites'
+    | '/vials'
     | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
@@ -127,6 +163,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalculatorRoute: typeof CalculatorRoute
   OnboardingRoute: typeof OnboardingRoute
+  ProgressRoute: typeof ProgressRoute
+  SitesRoute: typeof SitesRoute
+  VialsRoute: typeof VialsRoute
   LibraryCompoundIdRoute: typeof LibraryCompoundIdRoute
   ProtocolsProtocolIdRoute: typeof ProtocolsProtocolIdRoute
   ProtocolsNewRoute: typeof ProtocolsNewRoute
@@ -155,6 +194,27 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sites': {
+      id: '/sites'
+      path: '/sites'
+      fullPath: '/sites'
+      preLoaderRoute: typeof SitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vials': {
+      id: '/vials'
+      path: '/vials'
+      fullPath: '/vials'
+      preLoaderRoute: typeof VialsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/library/': {
@@ -199,6 +259,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalculatorRoute: CalculatorRoute,
   OnboardingRoute: OnboardingRoute,
+  ProgressRoute: ProgressRoute,
+  SitesRoute: SitesRoute,
+  VialsRoute: VialsRoute,
   LibraryCompoundIdRoute: LibraryCompoundIdRoute,
   ProtocolsProtocolIdRoute: ProtocolsProtocolIdRoute,
   ProtocolsNewRoute: ProtocolsNewRoute,

@@ -43,7 +43,7 @@ export class LocalMockSubscriptionService implements SubscriptionService {
   async getEntitlement() {
     return this.read();
   }
-  async purchase() {
+  async purchase(_planId: Plan["id"]) {
     return { ok: false as const, reason: NOT_CONNECTED };
   }
   async restore() {

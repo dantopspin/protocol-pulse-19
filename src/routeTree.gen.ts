@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as CalculatorRouteImport } from './routes/calculator'
+import { Route as HandoffRouteImport } from './routes/handoff'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PaywallRouteImport } from './routes/paywall'
 import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SitesRouteImport } from './routes/sites'
+import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as VialsRouteImport } from './routes/vials'
+import { Route as WeeklyReviewRouteImport } from './routes/weekly-review'
 import { Route as LibraryIndexRouteImport } from './routes/library.index'
 import { Route as LibraryCompoundIdRouteImport } from './routes/library.$compoundId'
 import { Route as ProtocolsIndexRouteImport } from './routes/protocols.index'
@@ -26,9 +32,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalculatorRoute = CalculatorRouteImport.update({
   id: '/calculator',
   path: '/calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HandoffRoute = HandoffRouteImport.update({
+  id: '/handoff',
+  path: '/handoff',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -36,9 +52,19 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PaywallRoute = PaywallRouteImport.update({
+  id: '/paywall',
+  path: '/paywall',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitesRoute = SitesRouteImport.update({
@@ -46,9 +72,19 @@ const SitesRoute = SitesRouteImport.update({
   path: '/sites',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VialsRoute = VialsRouteImport.update({
   id: '/vials',
   path: '/vials',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeeklyReviewRoute = WeeklyReviewRouteImport.update({
+  id: '/weekly-review',
+  path: '/weekly-review',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LibraryIndexRoute = LibraryIndexRouteImport.update({
@@ -79,11 +115,17 @@ const ProtocolsNewRoute = ProtocolsNewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
+  '/handoff': typeof HandoffRoute
   '/onboarding': typeof OnboardingRoute
+  '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/sites': typeof SitesRoute
+  '/timeline': typeof TimelineRoute
   '/vials': typeof VialsRoute
+  '/weekly-review': typeof WeeklyReviewRoute
   '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
@@ -92,11 +134,17 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
+  '/handoff': typeof HandoffRoute
   '/onboarding': typeof OnboardingRoute
+  '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/sites': typeof SitesRoute
+  '/timeline': typeof TimelineRoute
   '/vials': typeof VialsRoute
+  '/weekly-review': typeof WeeklyReviewRoute
   '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
@@ -106,11 +154,17 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
+  '/handoff': typeof HandoffRoute
   '/onboarding': typeof OnboardingRoute
+  '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/sites': typeof SitesRoute
+  '/timeline': typeof TimelineRoute
   '/vials': typeof VialsRoute
+  '/weekly-review': typeof WeeklyReviewRoute
   '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
@@ -121,11 +175,17 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/assistant'
     | '/calculator'
+    | '/handoff'
     | '/onboarding'
+    | '/paywall'
     | '/progress'
+    | '/settings'
     | '/sites'
+    | '/timeline'
     | '/vials'
+    | '/weekly-review'
     | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
@@ -134,11 +194,17 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/assistant'
     | '/calculator'
+    | '/handoff'
     | '/onboarding'
+    | '/paywall'
     | '/progress'
+    | '/settings'
     | '/sites'
+    | '/timeline'
     | '/vials'
+    | '/weekly-review'
     | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
@@ -147,11 +213,17 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/assistant'
     | '/calculator'
+    | '/handoff'
     | '/onboarding'
+    | '/paywall'
     | '/progress'
+    | '/settings'
     | '/sites'
+    | '/timeline'
     | '/vials'
+    | '/weekly-review'
     | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
@@ -161,11 +233,17 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssistantRoute: typeof AssistantRoute
   CalculatorRoute: typeof CalculatorRoute
+  HandoffRoute: typeof HandoffRoute
   OnboardingRoute: typeof OnboardingRoute
+  PaywallRoute: typeof PaywallRoute
   ProgressRoute: typeof ProgressRoute
+  SettingsRoute: typeof SettingsRoute
   SitesRoute: typeof SitesRoute
+  TimelineRoute: typeof TimelineRoute
   VialsRoute: typeof VialsRoute
+  WeeklyReviewRoute: typeof WeeklyReviewRoute
   LibraryCompoundIdRoute: typeof LibraryCompoundIdRoute
   ProtocolsProtocolIdRoute: typeof ProtocolsProtocolIdRoute
   ProtocolsNewRoute: typeof ProtocolsNewRoute
@@ -182,11 +260,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calculator': {
       id: '/calculator'
       path: '/calculator'
       fullPath: '/calculator'
       preLoaderRoute: typeof CalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/handoff': {
+      id: '/handoff'
+      path: '/handoff'
+      fullPath: '/handoff'
+      preLoaderRoute: typeof HandoffRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -196,11 +288,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/paywall': {
+      id: '/paywall'
+      path: '/paywall'
+      fullPath: '/paywall'
+      preLoaderRoute: typeof PaywallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/progress': {
       id: '/progress'
       path: '/progress'
       fullPath: '/progress'
       preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sites': {
@@ -210,11 +316,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vials': {
       id: '/vials'
       path: '/vials'
       fullPath: '/vials'
       preLoaderRoute: typeof VialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/weekly-review': {
+      id: '/weekly-review'
+      path: '/weekly-review'
+      fullPath: '/weekly-review'
+      preLoaderRoute: typeof WeeklyReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/library/': {
@@ -257,11 +377,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssistantRoute: AssistantRoute,
   CalculatorRoute: CalculatorRoute,
+  HandoffRoute: HandoffRoute,
   OnboardingRoute: OnboardingRoute,
+  PaywallRoute: PaywallRoute,
   ProgressRoute: ProgressRoute,
+  SettingsRoute: SettingsRoute,
   SitesRoute: SitesRoute,
+  TimelineRoute: TimelineRoute,
   VialsRoute: VialsRoute,
+  WeeklyReviewRoute: WeeklyReviewRoute,
   LibraryCompoundIdRoute: LibraryCompoundIdRoute,
   ProtocolsProtocolIdRoute: ProtocolsProtocolIdRoute,
   ProtocolsNewRoute: ProtocolsNewRoute,
@@ -271,3 +397,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

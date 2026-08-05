@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LibraryIndexRouteImport } from './routes/library.index'
+import { Route as LibraryCompoundIdRouteImport } from './routes/library.$compoundId'
 import { Route as ProtocolsIndexRouteImport } from './routes/protocols.index'
 import { Route as ProtocolsProtocolIdRouteImport } from './routes/protocols.$protocolId'
 import { Route as ProtocolsNewRouteImport } from './routes/protocols.new'
@@ -20,9 +23,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalculatorRoute = CalculatorRouteImport.update({
+  id: '/calculator',
+  path: '/calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryIndexRoute = LibraryIndexRouteImport.update({
+  id: '/library/',
+  path: '/library/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryCompoundIdRoute = LibraryCompoundIdRouteImport.update({
+  id: '/library/$compoundId',
+  path: '/library/$compoundId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProtocolsIndexRoute = ProtocolsIndexRouteImport.update({
@@ -43,55 +61,76 @@ const ProtocolsNewRoute = ProtocolsNewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
+  '/library/': typeof LibraryIndexRoute
   '/protocols/': typeof ProtocolsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
+  '/library': typeof LibraryIndexRoute
   '/protocols': typeof ProtocolsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/onboarding': typeof OnboardingRoute
+  '/library/$compoundId': typeof LibraryCompoundIdRoute
   '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
   '/protocols/new': typeof ProtocolsNewRoute
+  '/library/': typeof LibraryIndexRoute
   '/protocols/': typeof ProtocolsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calculator'
     | '/onboarding'
+    | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
+    | '/library/'
     | '/protocols/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/calculator'
     | '/onboarding'
+    | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
+    | '/library'
     | '/protocols'
   id:
     | '__root__'
     | '/'
+    | '/calculator'
     | '/onboarding'
+    | '/library/$compoundId'
     | '/protocols/$protocolId'
     | '/protocols/new'
+    | '/library/'
     | '/protocols/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalculatorRoute: typeof CalculatorRoute
   OnboardingRoute: typeof OnboardingRoute
+  LibraryCompoundIdRoute: typeof LibraryCompoundIdRoute
   ProtocolsProtocolIdRoute: typeof ProtocolsProtocolIdRoute
   ProtocolsNewRoute: typeof ProtocolsNewRoute
+  LibraryIndexRoute: typeof LibraryIndexRoute
   ProtocolsIndexRoute: typeof ProtocolsIndexRoute
 }
 
@@ -104,11 +143,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calculator': {
+      id: '/calculator'
+      path: '/calculator'
+      fullPath: '/calculator'
+      preLoaderRoute: typeof CalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/': {
+      id: '/library/'
+      path: '/library'
+      fullPath: '/library/'
+      preLoaderRoute: typeof LibraryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library/$compoundId': {
+      id: '/library/$compoundId'
+      path: '/library/$compoundId'
+      fullPath: '/library/$compoundId'
+      preLoaderRoute: typeof LibraryCompoundIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/protocols/': {
@@ -137,9 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalculatorRoute: CalculatorRoute,
   OnboardingRoute: OnboardingRoute,
+  LibraryCompoundIdRoute: LibraryCompoundIdRoute,
   ProtocolsProtocolIdRoute: ProtocolsProtocolIdRoute,
   ProtocolsNewRoute: ProtocolsNewRoute,
+  LibraryIndexRoute: LibraryIndexRoute,
   ProtocolsIndexRoute: ProtocolsIndexRoute,
 }
 export const routeTree = rootRouteImport

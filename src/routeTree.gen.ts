@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as ProtocolsIndexRouteImport } from './routes/protocols.index'
+import { Route as ProtocolsProtocolIdRouteImport } from './routes/protocols.$protocolId'
+import { Route as ProtocolsNewRouteImport } from './routes/protocols.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,34 +30,68 @@ const ProtocolsIndexRoute = ProtocolsIndexRouteImport.update({
   path: '/protocols/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtocolsProtocolIdRoute = ProtocolsProtocolIdRouteImport.update({
+  id: '/protocols/$protocolId',
+  path: '/protocols/$protocolId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtocolsNewRoute = ProtocolsNewRouteImport.update({
+  id: '/protocols/new',
+  path: '/protocols/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
+  '/protocols/new': typeof ProtocolsNewRoute
   '/protocols/': typeof ProtocolsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
+  '/protocols/new': typeof ProtocolsNewRoute
   '/protocols': typeof ProtocolsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/protocols/$protocolId': typeof ProtocolsProtocolIdRoute
+  '/protocols/new': typeof ProtocolsNewRoute
   '/protocols/': typeof ProtocolsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/onboarding' | '/protocols/'
+  fullPaths:
+    | '/'
+    | '/onboarding'
+    | '/protocols/$protocolId'
+    | '/protocols/new'
+    | '/protocols/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/onboarding' | '/protocols'
-  id: '__root__' | '/' | '/onboarding' | '/protocols/'
+  to:
+    | '/'
+    | '/onboarding'
+    | '/protocols/$protocolId'
+    | '/protocols/new'
+    | '/protocols'
+  id:
+    | '__root__'
+    | '/'
+    | '/onboarding'
+    | '/protocols/$protocolId'
+    | '/protocols/new'
+    | '/protocols/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OnboardingRoute: typeof OnboardingRoute
+  ProtocolsProtocolIdRoute: typeof ProtocolsProtocolIdRoute
+  ProtocolsNewRoute: typeof ProtocolsNewRoute
   ProtocolsIndexRoute: typeof ProtocolsIndexRoute
 }
 
@@ -82,12 +118,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtocolsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/protocols/$protocolId': {
+      id: '/protocols/$protocolId'
+      path: '/protocols/$protocolId'
+      fullPath: '/protocols/$protocolId'
+      preLoaderRoute: typeof ProtocolsProtocolIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/protocols/new': {
+      id: '/protocols/new'
+      path: '/protocols/new'
+      fullPath: '/protocols/new'
+      preLoaderRoute: typeof ProtocolsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OnboardingRoute: OnboardingRoute,
+  ProtocolsProtocolIdRoute: ProtocolsProtocolIdRoute,
+  ProtocolsNewRoute: ProtocolsNewRoute,
   ProtocolsIndexRoute: ProtocolsIndexRoute,
 }
 export const routeTree = rootRouteImport

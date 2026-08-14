@@ -103,6 +103,7 @@ export const initialState: AppState = {
   observations: [],
   calculations: [],
   aiMessages: [],
+  aiQueue: [],
   aiUsedThisWeek: 0,
   activeProtocolId: null,
   notificationsGranted: null,

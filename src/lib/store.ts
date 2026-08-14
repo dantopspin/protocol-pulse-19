@@ -35,6 +35,14 @@ export type AiMessage = {
   created_at: string;
 };
 
+export type AiQueueItem = {
+  id: string;
+  question: string;
+  kind: "question" | "weekly_summary" | "change_observation";
+  event_id: string | null;
+  created_at: string;
+};
+
 export type AppState = {
   preferences: Preferences;
   entitlement: EntitlementState;
@@ -49,12 +57,14 @@ export type AppState = {
   observations: ChangeObservation[];
   calculations: SavedCalculation[];
   aiMessages: AiMessage[];
+  aiQueue: AiQueueItem[];
   aiUsedThisWeek: number;
   activeProtocolId: string | null;
   notificationsGranted: boolean | null;
   healthConnected: boolean;
   travelMode: boolean;
 };
+
 
 const KEY = "peptidelens.v1";
 
@@ -93,6 +103,7 @@ export const initialState: AppState = {
   observations: [],
   calculations: [],
   aiMessages: [],
+  aiQueue: [],
   aiUsedThisWeek: 0,
   activeProtocolId: null,
   notificationsGranted: null,

@@ -138,10 +138,10 @@ export function migrateState(parsed: Partial<AppState> & Record<string, unknown>
   };
   // v1 queue items had no status/attempts/error fields.
   merged.aiQueue = (merged.aiQueue ?? []).map((q) => ({
-    status: "queued" as AiQueueStatus,
-    attempts: 0,
-    error: null,
     ...q,
+    status: q.status ?? ("queued" as AiQueueStatus),
+    attempts: q.attempts ?? 0,
+    error: q.error ?? null,
   }));
   if (!merged.aiWeekStart || merged.aiWeekStart === initialState.aiWeekStart) {
     merged.aiWeekStart = merged.aiUsedThisWeek > 0 ? new Date().toISOString() : initialState.aiWeekStart;

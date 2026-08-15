@@ -1,17 +1,22 @@
 import { useEffect, useSyncExternalStore } from "react";
+import { askAi, REFUSAL_TEXT } from "./ai.functions";
 import { adherence, compoundName } from "./domain";
 import { formatDate, formatDateTime } from "./format";
 import { getState, setState, uid, type AiQueueItem, type AppState } from "./store";
 import type { ChangeObservation, ProtocolEvent } from "./types";
 
-export const REFUSAL =
-  "I cannot recommend a dose or protocol change. Review the instructions you were given or contact a qualified healthcare professional. I can summarize your recorded history for that conversation.";
+export const REFUSAL = REFUSAL_TEXT;
 
-const ADVICE_PATTERN =
-  /(should i|what dose|how much|increase|decrease|titrate|stack|safe|buy|supplier|stop taking|is it normal|diagnose)/;
+export const AI_CATEGORIES = [
+  "Dose history",
+  "Vials",
+  "Symptoms",
+  "Change timeline",
+  "Adherence",
+] as const;
 
 /* ------------------------------------------------------------------ */
-/* Grounded answers                                                     */
+/* Permitted record context                                             */
 /* ------------------------------------------------------------------ */
 
 export function recordSummary(s: AppState) {
@@ -24,40 +29,89 @@ export function recordSummary(s: AppState) {
   ].join(" ");
 }
 
-export function composeAnswer(question: string, s: AppState) {
-  const q = question.toLowerCase();
-  if (ADVICE_PATTERN.test(q)) return REFUSAL;
+/**
+ * Builds the record context sent to the server. Nothing is sent unless the
+ * user has enabled assistant sharing; identifiers and notes are left out.
+ */
+export function buildAiContext(s: AppState): { context: string; categories: string[] } {
+  if (!s.preferences.ai_sharing) return { context: "", categories: [] };
+  const a = adherence(s, 30);
+  const lines: string[] = [];
+  const categories: string[] = [];
 
-  if (/site|thigh|abdomen|rotation/.test(q)) {
-    const site = s.sites[0];
-    return site
-      ? `Your most recent recorded site is ${site.site_key.replace(/_/g, " ")} on ${formatDateTime(site.used_at)}. ${s.sites.length} site records exist.`
-      : "No injection sites are recorded yet.";
+  lines.push(`Adherence over 30 days: ${a.pct == null ? "not enough records" : a.pct + "%"} (${a.logged} logged of ${a.scheduled} scheduled).`);
+  categories.push("Adherence");
+
+  if (s.protocolCompounds.length) {
+    categories.push("Protocols");
+    lines.push("Protocol entries:");
+    for (const pc of s.protocolCompounds.slice(0, 20)) {
+      lines.push(`- ${compoundName(pc.compound_id)}: ${pc.scheduled_amount} ${pc.amount_unit} scheduled`);
+    }
   }
-  if (/symptom|side effect/.test(q)) {
-    return s.symptoms.length
-      ? `You recorded ${s.symptoms.length} symptom entries. Most recent: ${s.symptoms[0]!.name} (severity ${s.symptoms[0]!.severity}) starting ${formatDate(s.symptoms[0]!.started_at)}.`
-      : "No symptom entries are recorded yet.";
+  if (s.doses.length) {
+    categories.push("Dose history");
+    lines.push(`Dose entries (${s.doses.length} total, most recent 40):`);
+    for (const d of s.doses.slice(0, 40)) {
+      lines.push(`- ${formatDateTime(d.logged_at)} ${compoundName(d.compound_id)} ${d.actual_amount} ${d.amount_unit} (${d.status})`);
+    }
   }
-  if (/vial|inventory|remaining/.test(q)) {
-    return s.vials.length
-      ? s.vials
-          .map(
-            (v) =>
-              `${v.name}: ${v.manual_remaining_amount ?? v.estimated_remaining_amount} ${v.amount_unit} remaining (${v.status}).`,
-          )
-          .join(" ")
-      : "No vials are recorded yet.";
+  if (s.vials.length) {
+    categories.push("Vials");
+    lines.push("Vials:");
+    for (const v of s.vials.slice(0, 20)) {
+      lines.push(`- ${v.name}: ${v.manual_remaining_amount ?? v.estimated_remaining_amount} ${v.amount_unit} remaining, ${v.status}`);
+    }
   }
-  if (/change|timeline|history/.test(q)) {
-    return s.events.length
-      ? `Most recent recorded changes: ${s.events
-          .slice(0, 3)
-          .map((e) => `${e.event_type.replace(/_/g, " ")} on ${formatDate(e.timestamp)}`)
-          .join("; ")}.`
-      : "No protocol changes are recorded yet.";
+  if (s.symptoms.length) {
+    categories.push("Symptoms");
+    lines.push("Symptom entries:");
+    for (const x of s.symptoms.slice(0, 30)) {
+      lines.push(`- ${formatDate(x.started_at)} ${x.name}, severity ${x.severity}/10${x.resolved_at ? `, resolved ${formatDate(x.resolved_at)}` : ", ongoing"}`);
+    }
   }
-  return recordSummary(s);
+  if (s.sites.length) {
+    categories.push("Injection sites");
+    lines.push("Recent injection sites:");
+    for (const site of s.sites.slice(0, 20)) {
+      lines.push(`- ${formatDateTime(site.used_at)} ${site.site_key.replace(/_/g, " ")}`);
+    }
+  }
+  if (s.events.length) {
+    categories.push("Change timeline");
+    lines.push("Recorded changes:");
+    for (const e of s.events.slice(0, 25)) {
+      lines.push(`- ${formatDateTime(e.timestamp)} ${e.event_type.replace(/_/g, " ")}${e.new_value ? `: ${e.previous_value ?? ""} -> ${e.new_value}` : ""}`);
+    }
+  }
+  return { context: lines.join("\n"), categories };
+}
+
+/* ------------------------------------------------------------------ */
+/* Weekly allowance                                                     */
+/* ------------------------------------------------------------------ */
+
+const WEEK_MS = 7 * 86400000;
+
+/** Rolls the 7-day Free allowance window forward when it has expired. */
+export function rollAiWeek(now = Date.now()) {
+  const s = getState();
+  const start = new Date(s.aiWeekStart).getTime();
+  if (!Number.isFinite(start) || now - start >= WEEK_MS) {
+    setState((prev) => ({ ...prev, aiUsedThisWeek: 0, aiWeekStart: new Date(now).toISOString() }));
+    return true;
+  }
+  return false;
+}
+
+function consumeAllowance() {
+  rollAiWeek();
+  setState((s) => ({
+    ...s,
+    aiUsedThisWeek: s.aiUsedThisWeek + 1,
+    aiWeekStart:
+      new Date(s.aiWeekStart).getTime() > 0 ? s.aiWeekStart : new Date().toISOString(),
+  }));
 }
 
 /* ------------------------------------------------------------------ */
@@ -93,16 +147,69 @@ export function enqueue(
   kind: AiQueueItem["kind"] = "question",
   event_id: string | null = null,
 ) {
+  const existing = getState().aiQueue.find(
+    (q) => q.question === question && q.kind === kind && q.event_id === event_id,
+  );
+  if (existing) return existing; // no duplicates
   const item: AiQueueItem = {
     id: uid(),
     question,
     kind,
     event_id,
+    status: "queued",
+    attempts: 0,
+    error: null,
     created_at: new Date().toISOString(),
   };
   setState((s) => ({ ...s, aiQueue: [...s.aiQueue, item] }));
   return item;
 }
+
+export function removeQueued(id: string) {
+  setState((s) => ({ ...s, aiQueue: s.aiQueue.filter((q) => q.id !== id) }));
+}
+
+export function retryQueued(id: string) {
+  setState((s) => ({
+    ...s,
+    aiQueue: s.aiQueue.map((q) => (q.id === id ? { ...q, status: "queued", error: null } : q)),
+  }));
+  void flushAiQueue();
+}
+
+/** Sends one question to the server assistant. Returns the answer text. */
+export async function askAssistant(question: string): Promise<
+  { ok: true; text: string; categories: string[] } | { ok: false; error: string }
+> {
+  const s = getState();
+  const { context, categories } = buildAiContext(s);
+  try {
+    const result = await askAi({ data: { question, context, categories } });
+    if (result.ok) consumeAllowance();
+    return result;
+  } catch {
+    return { ok: false, error: "The assistant could not be reached." };
+  }
+}
+
+export function appendMessage(
+  role: "user" | "assistant",
+  text: string,
+  sources: string[] = [],
+  queued = false,
+) {
+  setState((s) => ({
+    ...s,
+    aiMessages: [
+      { id: uid(), role, text, sources, queued, created_at: new Date().toISOString() },
+      ...s.aiMessages,
+    ],
+  }));
+}
+
+/* ------------------------------------------------------------------ */
+/* Change observations (local, deterministic)                           */
+/* ------------------------------------------------------------------ */
 
 function buildObservation(s: AppState, event: ProtocolEvent): ChangeObservation {
   const at = new Date(event.timestamp).getTime();
@@ -171,39 +278,48 @@ export function generateMissingObservations() {
   return created.length;
 }
 
+/* ------------------------------------------------------------------ */
+/* Processing                                                           */
+/* ------------------------------------------------------------------ */
+
+const MAX_ATTEMPTS = 3;
 let flushing = false;
 
 /** Process everything queued while offline. Safe to call repeatedly. */
 export async function flushAiQueue() {
   if (flushing || !isOnline()) return;
-  const queued = getState().aiQueue;
-  if (queued.length === 0) {
-    generateMissingObservations();
-    return;
-  }
+  rollAiWeek();
+  generateMissingObservations();
+  const queued = getState().aiQueue.filter((q) => q.status === "queued");
+  if (queued.length === 0) return;
   flushing = true;
   try {
     for (const item of queued) {
-      const s = getState();
-      const text =
-        item.kind === "weekly_summary" ? recordSummary(s) : composeAnswer(item.question, s);
       setState((prev) => ({
         ...prev,
-        aiQueue: prev.aiQueue.filter((q) => q.id !== item.id),
-        aiMessages: [
-          {
-            id: uid(),
-            role: "assistant",
-            text,
-            sources: ["Dose history", "Vials", "Symptoms", "Change timeline"],
-            queued: false,
-            created_at: new Date().toISOString(),
-          },
-          ...prev.aiMessages,
-        ],
+        aiQueue: prev.aiQueue.map((q) =>
+          q.id === item.id ? { ...q, status: "processing", attempts: q.attempts + 1 } : q,
+        ),
       }));
+      const question =
+        item.kind === "weekly_summary"
+          ? "Summarise my recorded entries for the last seven days."
+          : item.question;
+      const result = await askAssistant(question);
+      if (result.ok) {
+        removeQueued(item.id);
+        appendMessage("assistant", result.text, result.categories);
+      } else {
+        setState((prev) => ({
+          ...prev,
+          aiQueue: prev.aiQueue.map((q) =>
+            q.id === item.id ? { ...q, status: "failed", error: result.error } : q,
+          ),
+        }));
+        const attempts = getState().aiQueue.find((q) => q.id === item.id)?.attempts ?? 0;
+        if (attempts >= MAX_ATTEMPTS) continue;
+      }
     }
-    generateMissingObservations();
   } finally {
     flushing = false;
   }
@@ -216,7 +332,7 @@ export function useAiQueueProcessor() {
     if (!online) return;
     const t = setTimeout(() => {
       void flushAiQueue();
-    }, 400);
+    }, 800);
     return () => clearTimeout(t);
   }, [online]);
 }

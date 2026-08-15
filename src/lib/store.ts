@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { idbGet, idbSet } from "./idb";
 import type {
   ChangeObservation,
   DoseLog,
@@ -35,15 +36,21 @@ export type AiMessage = {
   created_at: string;
 };
 
+export type AiQueueStatus = "queued" | "processing" | "failed";
+
 export type AiQueueItem = {
   id: string;
   question: string;
   kind: "question" | "weekly_summary" | "change_observation";
   event_id: string | null;
+  status: AiQueueStatus;
+  attempts: number;
+  error: string | null;
   created_at: string;
 };
 
 export type AppState = {
+  schema_version: number;
   preferences: Preferences;
   entitlement: EntitlementState;
   protocols: Protocol[];
@@ -59,16 +66,21 @@ export type AppState = {
   aiMessages: AiMessage[];
   aiQueue: AiQueueItem[];
   aiUsedThisWeek: number;
+  /** ISO timestamp of the start of the current 7-day AI allowance window. */
+  aiWeekStart: string;
   activeProtocolId: string | null;
   notificationsGranted: boolean | null;
-  healthConnected: boolean;
   travelMode: boolean;
 };
 
+export const SCHEMA_VERSION = 2;
 
-const KEY = "peptidelens.v1";
+/** Storage keys. v1 lived in localStorage; v2 lives in IndexedDB. */
+const LEGACY_KEY = "peptidelens.v1";
+const KEY = "peptidelens.state";
 
 export const initialState: AppState = {
+  schema_version: SCHEMA_VERSION,
   preferences: {
     measurement_system: "metric",
     amount_display: "both",
@@ -105,11 +117,41 @@ export const initialState: AppState = {
   aiMessages: [],
   aiQueue: [],
   aiUsedThisWeek: 0,
+  aiWeekStart: new Date(0).toISOString(),
   activeProtocolId: null,
   notificationsGranted: null,
-  healthConnected: false,
   travelMode: false,
 };
+
+/* ------------------------------------------------------------------ */
+/* Migration                                                            */
+/* ------------------------------------------------------------------ */
+
+/** Upgrades any previously stored shape to the current schema without loss. */
+export function migrateState(parsed: Partial<AppState> & Record<string, unknown>): AppState {
+  const merged: AppState = {
+    ...initialState,
+    ...(parsed as Partial<AppState>),
+    preferences: { ...initialState.preferences, ...(parsed.preferences ?? {}) },
+    entitlement: { ...initialState.entitlement, ...(parsed.entitlement ?? {}) },
+    schema_version: SCHEMA_VERSION,
+  };
+  // v1 queue items had no status/attempts/error fields.
+  merged.aiQueue = (merged.aiQueue ?? []).map((q) => ({
+    status: "queued" as AiQueueStatus,
+    attempts: 0,
+    error: null,
+    ...q,
+  }));
+  if (!merged.aiWeekStart || merged.aiWeekStart === initialState.aiWeekStart) {
+    merged.aiWeekStart = merged.aiUsedThisWeek > 0 ? new Date().toISOString() : initialState.aiWeekStart;
+  }
+  return merged;
+}
+
+/* ------------------------------------------------------------------ */
+/* Store                                                                */
+/* ------------------------------------------------------------------ */
 
 let state: AppState = initialState;
 let hydrated = false;
@@ -117,31 +159,40 @@ const listeners = new Set<() => void>();
 
 function persist() {
   if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* storage unavailable; records stay in memory for this session */
-  }
+  const snapshot = state;
+  void idbSet(KEY, snapshot).then((ok) => {
+    if (ok) return;
+    try {
+      window.localStorage.setItem(LEGACY_KEY, JSON.stringify(snapshot));
+    } catch {
+      /* storage unavailable; records stay in memory for this session */
+    }
+  });
 }
 
-export function hydrate() {
+export async function hydrateAsync() {
   if (hydrated || typeof window === "undefined") return;
   hydrated = true;
   try {
-    const raw = window.localStorage.getItem(KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<AppState>;
-      state = {
-        ...initialState,
-        ...parsed,
-        preferences: { ...initialState.preferences, ...(parsed.preferences ?? {}) },
-        entitlement: { ...initialState.entitlement, ...(parsed.entitlement ?? {}) },
-      };
+    const stored = await idbGet<Partial<AppState>>(KEY);
+    if (stored) {
+      state = migrateState(stored as never);
+    } else {
+      const raw = window.localStorage.getItem(LEGACY_KEY);
+      if (raw) {
+        state = migrateState(JSON.parse(raw) as never);
+        persist(); // carry the v1 records into IndexedDB
+      }
     }
   } catch {
     state = initialState;
   }
   emit();
+}
+
+/** Synchronous entry point used by screens; hydration completes async. */
+export function hydrate() {
+  void hydrateAsync();
 }
 
 function emit() {
@@ -198,7 +249,71 @@ export function recordEvent(
 }
 
 export function resetAllData() {
-  state = initialState;
+  state = { ...initialState };
   persist();
   emit();
+}
+
+/* ------------------------------------------------------------------ */
+/* Granular deletion                                                    */
+/* ------------------------------------------------------------------ */
+
+export type RecordCollection =
+  | "protocols"
+  | "vials"
+  | "doses"
+  | "symptoms"
+  | "metrics"
+  | "sites"
+  | "events"
+  | "observations"
+  | "calculations"
+  | "aiMessages";
+
+export function deleteRecord(collection: RecordCollection, id: string) {
+  setState((s) => {
+    if (collection === "protocols") {
+      return {
+        ...s,
+        protocols: s.protocols.filter((p) => p.id !== id),
+        protocolCompounds: s.protocolCompounds.filter((pc) => pc.protocol_id !== id),
+        activeProtocolId: s.activeProtocolId === id ? null : s.activeProtocolId,
+      };
+    }
+    const list = s[collection] as { id: string }[];
+    return { ...s, [collection]: list.filter((r) => r.id !== id) } as AppState;
+  });
+}
+
+export function clearCollection(collection: RecordCollection) {
+  setState((s) => {
+    if (collection === "protocols") {
+      return { ...s, protocols: [], protocolCompounds: [], activeProtocolId: null };
+    }
+    return { ...s, [collection]: [] } as AppState;
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Backup restore                                                       */
+/* ------------------------------------------------------------------ */
+
+export function restoreFromJson(json: string): { ok: boolean; error?: string } {
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return { ok: false, error: "That file is not valid JSON." };
+  }
+  if (typeof parsed !== "object" || parsed === null || !("protocols" in parsed)) {
+    return { ok: false, error: "That file is not a Peptide Lens backup." };
+  }
+  const camel = {
+    ...parsed,
+    protocolCompounds: parsed["protocolCompounds"] ?? parsed["protocol_compounds"] ?? [],
+  };
+  state = migrateState(camel as never);
+  persist();
+  emit();
+  return { ok: true };
 }

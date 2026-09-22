@@ -57,12 +57,9 @@ function SettingsPage() {
 
       <Section title="Health data">
         <Card>
-          <Row label="Status" value={state.healthConnected ? "Connected" : "Not connected"} mono={false} className="border-b-0" />
+          <Row label="Apple Health" value="Available in the native iOS app" mono={false} className="border-b-0" />
         </Card>
-        <Button variant="secondary" full className="mt-4" onClick={() => setState((s) => ({ ...s, healthConnected: !s.healthConnected }))}>
-          {state.healthConnected ? "Disconnect health data" : "Connect health data"}
-        </Button>
-        <p className="mt-3"><Note>The health adapter is prepared. Imported values are labeled by source and kept separate from manual entries.</Note></p>
+        <p className="mt-3"><Note>Apple Health can only be read by the native iOS 17+ build. In this browser build no health data is read or written. Imported values will be labeled by source and kept separate from manual entries.</Note></p>
       </Section>
 
       <Section title="Privacy and data">

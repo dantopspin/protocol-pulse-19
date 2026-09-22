@@ -11,6 +11,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AiQueueBanner } from "../components/AiQueueBanner";
+import { useAiQueueProcessor } from "../lib/ai-queue";
+import { hydrate } from "../lib/store";
 
 function NotFoundComponent() {
   return (

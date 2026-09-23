@@ -28,6 +28,10 @@ const SYSTEM = [
   "- Never invent records. If RECORDS does not contain the answer, say the records do not contain it.",
   "- Describe timing relationships as temporal only; never state or imply causation.",
   "- Answer in at most 120 words, plain sentences, no markdown headings.",
+  "Citations:",
+  "- Each RECORDS line may start with a reference in square brackets, such as [D3] or [V1].",
+  "- After every statement that comes from a record, cite the exact reference(s) it came from, e.g. 'You logged 250 mcg on 3 May [D3].'",
+  "- Only use references that appear in RECORDS. Never invent a reference.",
 ].join("\n");
 
 export const REFUSAL_TEXT =

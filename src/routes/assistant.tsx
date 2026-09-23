@@ -62,7 +62,7 @@ function Assistant() {
     const result = await askAssistant(question); // usage is counted only on success
     setBusy(false);
     if (result.ok) {
-      appendMessage("assistant", result.text, result.categories);
+      appendMessage("assistant", result.text, result.categories, false, result.refs);
     } else {
       enqueue(question);
       setNotice(`${result.error} The question stays queued — retry below.`);
@@ -149,7 +149,16 @@ function Assistant() {
             {state.aiMessages.map((m) => (
               <li key={m.id} className="py-3 hairline-b">
                 <p className="eyebrow">{m.role === "user" ? "You" : "Assistant"}</p>
-                <p className="mt-1 text-[14px] leading-relaxed">{m.text}</p>
+                <p className="mt-1 text-[14px] leading-relaxed">
+                  {m.role === "assistant" ? <AnswerText text={m.text} refs={m.refs ?? []} /> : m.text}
+                </p>
+                {(m.refs?.length ?? 0) > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {m.refs!.map((r) => (
+                      <SourceLink key={r.ref} source={r} />
+                    ))}
+                  </div>
+                )}
                 {m.sources.length > 0 && (
                   <p className="mt-1 text-[12px] text-muted-foreground">Records used: {m.sources.join(", ")}</p>
                 )}

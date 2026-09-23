@@ -5,6 +5,10 @@ import { Button, Card, EmptyState, Field, LockedCard, Note, Row, Section, inputC
 import { adherence } from "@/lib/domain";
 import { useEntitlement } from "@/lib/entitlements";
 import { setState, uid, useStore } from "@/lib/store";
+import { anchorId } from "@/lib/ai-sources";
+import { formatDate } from "@/lib/format";
+import { focusClass, useFocusedRecord } from "@/lib/use-focus-record";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
@@ -21,6 +25,7 @@ export const Route = createFileRoute("/progress")({
 function ProgressPage() {
   const state = useStore((s) => s);
   const { isPro } = useEntitlement();
+  const focused = useFocusedRecord();
   const [weight, setWeight] = useState("");
   const [symptom, setSymptom] = useState("");
   const a = adherence(state, 30);
@@ -66,7 +71,7 @@ function ProgressPage() {
             {weights.map((m) => (
               <li key={m.id} className="flex justify-between py-2 hairline-b">
                 <span className="num text-[14px]">{m.value} {m.unit}</span>
-                <span className="num text-[12px] text-muted-foreground">{new Date(m.recorded_at).toLocaleDateString()}</span>
+                <span className="num text-[12px] text-muted-foreground">{formatDate(m.recorded_at)}</span>
               </li>
             ))}
           </ul>
@@ -103,9 +108,9 @@ function ProgressPage() {
         ) : (
           <ul className="mt-4 border-t border-hairline">
             {state.symptoms.slice(0, 10).map((s) => (
-              <li key={s.id} className="flex justify-between py-2 hairline-b">
+              <li key={s.id} id={anchorId(s.id)} className={cn("flex justify-between py-2 hairline-b", focused === s.id && focusClass)}>
                 <span className="text-[14px]">{s.name}</span>
-                <span className="num text-[12px] text-muted-foreground">{new Date(s.started_at).toLocaleDateString()}</span>
+                <span className="num text-[12px] text-muted-foreground">{formatDate(s.started_at)}</span>
               </li>
             ))}
           </ul>

@@ -13,6 +13,7 @@ import {
   reconFor,
   vialFor,
 } from "@/lib/domain";
+import { formatLongDate } from "@/lib/format";
 import { hydrate, useStore } from "@/lib/store";
 import type { ProtocolCompound } from "@/lib/types";
 
@@ -59,11 +60,7 @@ function TodayPage() {
   );
   const a = adherence(state, 7);
 
-  const dateLabel = today.toLocaleDateString(undefined, {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
+  const dateLabel = formatLongDate(today);
 
   return (
     <Screen title="Today" eyebrow={dateLabel} right={<HeaderActions />}>

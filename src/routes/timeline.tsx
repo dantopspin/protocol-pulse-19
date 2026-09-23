@@ -3,6 +3,10 @@ import { Screen } from "@/components/AppShell";
 import { EmptyState, LinkButton, Note, Section } from "@/components/kit";
 import { useEntitlement } from "@/lib/entitlements";
 import { useStore } from "@/lib/store";
+import { anchorId } from "@/lib/ai-sources";
+import { formatDateTime } from "@/lib/format";
+import { focusClass, useFocusedRecord } from "@/lib/use-focus-record";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/timeline")({
   head: () => ({
@@ -19,6 +23,7 @@ export const Route = createFileRoute("/timeline")({
 function TimelinePage() {
   const events = useStore((s) => s.events);
   const { isPro } = useEntitlement();
+  const focused = useFocusedRecord();
   return (
     <Screen title="Change Timeline" eyebrow="Protocol Intelligence" back={{ to: "/", label: "Today" }}>
       <Section>
@@ -27,8 +32,8 @@ function TimelinePage() {
         ) : (
           <ol className="border-l border-hairline pl-4">
             {events.map((e) => (
-              <li key={e.id} className="mb-6">
-                <p className="num text-[12px] text-muted-foreground">{new Date(e.timestamp).toLocaleString()}</p>
+              <li key={e.id} id={anchorId(e.id)} className={cn("mb-6", focused === e.id && focusClass)}>
+                <p className="num text-[12px] text-muted-foreground">{formatDateTime(e.timestamp)}</p>
                 <p className="mt-1 text-[15px]">{e.event_type.replace(/_/g, " ")}</p>
                 {(e.previous_value || e.new_value) && (
                   <p className="num mt-1 text-[13px]">{e.previous_value ? `${e.previous_value} → ` : ""}{e.new_value}</p>

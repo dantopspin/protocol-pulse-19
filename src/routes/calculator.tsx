@@ -140,7 +140,7 @@ function CalculatorPage() {
               <li key={c.id} className="py-3 hairline-b">
                 <p className="num text-[14px]">{c.label}</p>
                 <p className="num text-[12px] text-muted-foreground">
-                  Target {c.targetAmount} {c.targetUnit} · {c.syringe} · {new Date(c.created_at).toLocaleDateString()}
+                  Target {c.targetAmount} {c.targetUnit} · {c.syringe} · {formatDate(c.created_at)}
                 </p>
               </li>
             ))}

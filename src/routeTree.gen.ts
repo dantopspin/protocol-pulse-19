@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as HandoffRouteImport } from './routes/handoff'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PaywallRouteImport } from './routes/paywall'
 import { Route as ProgressRouteImport } from './routes/progress'
@@ -45,6 +46,11 @@ const CalculatorRoute = CalculatorRouteImport.update({
 const HandoffRoute = HandoffRouteImport.update({
   id: '/handoff',
   path: '/handoff',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
   '/handoff': typeof HandoffRoute
+  '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
   '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
   '/handoff': typeof HandoffRoute
+  '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
   '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
   '/handoff': typeof HandoffRoute
+  '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
   '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/calculator'
     | '/handoff'
+    | '/history'
     | '/onboarding'
     | '/paywall'
     | '/progress'
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/calculator'
     | '/handoff'
+    | '/history'
     | '/onboarding'
     | '/paywall'
     | '/progress'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/calculator'
     | '/handoff'
+    | '/history'
     | '/onboarding'
     | '/paywall'
     | '/progress'
@@ -236,6 +248,7 @@ export interface RootRouteChildren {
   AssistantRoute: typeof AssistantRoute
   CalculatorRoute: typeof CalculatorRoute
   HandoffRoute: typeof HandoffRoute
+  HistoryRoute: typeof HistoryRoute
   OnboardingRoute: typeof OnboardingRoute
   PaywallRoute: typeof PaywallRoute
   ProgressRoute: typeof ProgressRoute
@@ -279,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/handoff'
       fullPath: '/handoff'
       preLoaderRoute: typeof HandoffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -380,6 +400,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssistantRoute: AssistantRoute,
   CalculatorRoute: CalculatorRoute,
   HandoffRoute: HandoffRoute,
+  HistoryRoute: HistoryRoute,
   OnboardingRoute: OnboardingRoute,
   PaywallRoute: PaywallRoute,
   ProgressRoute: ProgressRoute,

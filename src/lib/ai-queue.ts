@@ -177,16 +177,23 @@ export function retryQueued(id: string) {
   void flushAiQueue();
 }
 
-/** Sends one question to the server assistant. Returns the answer text. */
+/** Sends one question to the server assistant. Returns the answer and its sources. */
 export async function askAssistant(question: string): Promise<
-  { ok: true; text: string; categories: string[] } | { ok: false; error: string }
+  | { ok: true; text: string; categories: string[]; refs: AiSource[] }
+  | { ok: false; error: string }
 > {
   const s = getState();
-  const { context, categories } = buildAiContext(s);
+  const { context, categories, sources } = buildSourcedContext(s);
   try {
     const result = await askAi({ data: { question, context, categories } });
-    if (result.ok) consumeAllowance();
-    return result;
+    if (!result.ok) return result;
+    consumeAllowance();
+    return {
+      ok: true,
+      text: result.text,
+      categories: result.categories,
+      refs: citedSources(result.text, sources),
+    };
   } catch {
     return { ok: false, error: "The assistant could not be reached." };
   }
@@ -197,11 +204,12 @@ export function appendMessage(
   text: string,
   sources: string[] = [],
   queued = false,
+  refs: AiSource[] = [],
 ) {
   setState((s) => ({
     ...s,
     aiMessages: [
-      { id: uid(), role, text, sources, queued, created_at: new Date().toISOString() },
+      { id: uid(), role, text, sources, refs, queued, created_at: new Date().toISOString() },
       ...s.aiMessages,
     ],
   }));

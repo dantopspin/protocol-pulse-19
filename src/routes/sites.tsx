@@ -4,6 +4,7 @@ import { Note, Section } from "@/components/kit";
 import { SITES } from "@/lib/compounds";
 import { suggestedSite } from "@/lib/domain";
 import { useStore } from "@/lib/store";
+import { formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/sites")({
   head: () => ({
@@ -32,7 +33,7 @@ function SitesPage() {
               return (
                 <button
                   key={s.key}
-                  aria-label={`${s.label}. ${used ? `Last used ${new Date(used).toLocaleDateString()}` : "Not recorded"}`}
+                  aria-label={`${s.label}. ${used ? `Last used ${formatDate(used)}` : "Not recorded"}`}
                   className={`absolute size-[26px] -translate-x-1/2 -translate-y-1/2 border ${suggested === s.key ? "border-primary bg-primary/20" : used ? "border-foreground/40 bg-foreground/10" : "border-hairline"}`}
                   style={{ left: `${s.x}%`, top: `${s.y}%` }}
                 />
@@ -44,7 +45,7 @@ function SitesPage() {
               <li key={s.key} className="flex items-center justify-between gap-3 py-3 hairline-b">
                 <span className="text-[14px]">{s.label}</span>
                 <span className="num text-[12px] text-muted-foreground">
-                  {lastUse(s.key) ? new Date(lastUse(s.key)!).toLocaleDateString() : "Not recorded"}
+                  {lastUse(s.key) ? formatDate(lastUse(s.key)!) : "Not recorded"}
                 </span>
               </li>
             ))}

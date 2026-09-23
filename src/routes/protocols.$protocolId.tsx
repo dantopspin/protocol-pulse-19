@@ -1,3 +1,4 @@
+import { formatDate, formatDateTime } from "@/lib/format";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen } from "@/components/AppShell";
@@ -68,7 +69,7 @@ function ProtocolDetail() {
       <Section title="Instruction source">
         <Card>
           <Row label="Source" value={protocol.instruction_source} mono={false} />
-          <Row label="Start date" value={new Date(protocol.start_date).toLocaleDateString()} />
+          <Row label="Start date" value={formatDate(protocol.start_date)} />
           <Row label="Notes" value={protocol.notes || "None"} mono={false} className="border-b-0" />
         </Card>
       </Section>
@@ -80,7 +81,7 @@ function ProtocolDetail() {
             <li key={e.id} className="py-3 hairline-b">
               <p className="text-[14px]">{e.event_type.replace(/_/g, " ")}</p>
               <p className="num text-[12px] text-muted-foreground">
-                {new Date(e.timestamp).toLocaleString()}
+                {formatDateTime(e.timestamp)}
                 {e.previous_value ? ` · ${e.previous_value} → ${e.new_value}` : e.new_value ? ` · ${e.new_value}` : ""}
               </p>
             </li>

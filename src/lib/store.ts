@@ -27,11 +27,22 @@ export type SavedCalculation = {
   created_at: string;
 };
 
+export type AiMessageSource = {
+  ref: string;
+  kind: "dose" | "vial" | "symptom" | "event" | "site" | "protocol";
+  recordId: string;
+  label: string;
+  to: string;
+};
+
 export type AiMessage = {
   id: string;
   role: "user" | "assistant";
   text: string;
+  /** Record categories used to answer. */
   sources: string[];
+  /** Individual records the answer cites, in citation order. */
+  refs?: AiMessageSource[];
   queued: boolean;
   created_at: string;
 };

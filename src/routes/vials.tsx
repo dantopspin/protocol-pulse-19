@@ -4,6 +4,9 @@ import { EmptyState, LinkButton, Note, Row, Section, StatusTag } from "@/compone
 import { fmt } from "@/lib/calc";
 import { compoundName } from "@/lib/domain";
 import { useStore } from "@/lib/store";
+import { anchorId } from "@/lib/ai-sources";
+import { focusClass, useFocusedRecord } from "@/lib/use-focus-record";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/vials")({
   head: () => ({
@@ -19,6 +22,7 @@ export const Route = createFileRoute("/vials")({
 
 function VialsPage() {
   const vials = useStore((s) => s.vials);
+  const focused = useFocusedRecord();
   return (
     <Screen title="Vials" eyebrow={`${vials.length} recorded`} back={{ to: "/protocols", label: "Protocols" }}>
       <Section>
@@ -26,7 +30,7 @@ function VialsPage() {
           <EmptyState title="No active vial" body="Add a vial to estimate remaining doses." action={<LinkButton to="/onboarding" variant="secondary">Set up a vial</LinkButton>} />
         ) : (
           vials.map((v) => (
-            <div key={v.id} className="mb-4 border border-hairline p-4">
+            <div key={v.id} id={anchorId(v.id)} className={cn("mb-4 border border-hairline p-4", focused === v.id && focusClass)}>
               <div className="flex items-center justify-between gap-3">
                 <p className="text-[17px] font-medium">{v.name}</p>
                 <StatusTag tone={v.status === "low" ? "warning" : v.status === "active" ? "accent" : "neutral"}>{v.status}</StatusTag>

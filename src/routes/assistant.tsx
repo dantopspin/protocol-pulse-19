@@ -1,3 +1,6 @@
+import { Link } from "@tanstack/react-router";
+import { anchorId, parseAnswer, type AiSource } from "@/lib/ai-sources";
+import type { AiMessageSource } from "@/lib/store";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen } from "@/components/AppShell";
@@ -175,5 +178,39 @@ function Assistant() {
         </Note>
       </Section>
     </Screen>
+  );
+}
+
+/** Renders an answer with its inline citations as tappable source links. */
+function AnswerText({ text, refs }: { text: string; refs: AiMessageSource[] }) {
+  const segments = parseAnswer(text, refs as AiSource[]);
+  return (
+    <>
+      {segments.map((seg, i) =>
+        seg.type === "text" ? (
+          <span key={i}>{seg.text}</span>
+        ) : (
+          <SourceLink key={i} source={seg.source} inline />
+        ),
+      )}
+    </>
+  );
+}
+
+function SourceLink({ source, inline }: { source: AiMessageSource; inline?: boolean }) {
+  return (
+    <Link
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      to={source.to as any}
+      hash={anchorId(source.recordId)}
+      className={
+        inline
+          ? "mx-[2px] align-baseline text-[11px] text-primary underline underline-offset-4"
+          : "border border-hairline px-2 py-1 text-[11px] text-primary"
+      }
+      title={source.label}
+    >
+      {inline ? `[${source.ref}]` : `${source.ref} · ${source.label}`}
+    </Link>
   );
 }

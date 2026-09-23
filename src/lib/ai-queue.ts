@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { askAi, REFUSAL_TEXT } from "./ai.functions";
+import { buildSourcedContext, citedSources, type AiSource } from "./ai-sources";
 import { adherence, compoundName } from "./domain";
 import { formatDate, formatDateTime } from "./format";
 import { getState, setState, uid, type AiQueueItem, type AppState } from "./store";
@@ -316,7 +317,7 @@ export async function flushAiQueue() {
       const result = await askAssistant(question);
       if (result.ok) {
         removeQueued(item.id);
-        appendMessage("assistant", result.text, result.categories);
+        appendMessage("assistant", result.text, result.categories, false, result.refs);
       } else {
         setState((prev) => ({
           ...prev,

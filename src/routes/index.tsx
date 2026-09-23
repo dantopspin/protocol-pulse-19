@@ -101,7 +101,10 @@ function TodayPage() {
             )}
           </Section>
 
-          <Section title="Today's entries">
+          <Section
+            title="Today's entries"
+            action={<Link to="/history" className="text-[13px] text-primary">Dose history</Link>}
+          >
             <ul className="border-t border-hairline">
               {entries.length === 0 && (
                 <li className="py-4">

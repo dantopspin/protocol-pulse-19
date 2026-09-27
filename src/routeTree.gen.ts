@@ -17,6 +17,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PaywallRouteImport } from './routes/paywall'
 import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as RecapRouteImport } from './routes/recap'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SitesRouteImport } from './routes/sites'
 import { Route as TimelineRouteImport } from './routes/timeline'
@@ -66,6 +67,11 @@ const PaywallRoute = PaywallRouteImport.update({
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecapRoute = RecapRouteImport.update({
+  id: '/recap',
+  path: '/recap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
+  '/recap': typeof RecapRoute
   '/settings': typeof SettingsRoute
   '/sites': typeof SitesRoute
   '/timeline': typeof TimelineRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
+  '/recap': typeof RecapRoute
   '/settings': typeof SettingsRoute
   '/sites': typeof SitesRoute
   '/timeline': typeof TimelineRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/paywall': typeof PaywallRoute
   '/progress': typeof ProgressRoute
+  '/recap': typeof RecapRoute
   '/settings': typeof SettingsRoute
   '/sites': typeof SitesRoute
   '/timeline': typeof TimelineRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/paywall'
     | '/progress'
+    | '/recap'
     | '/settings'
     | '/sites'
     | '/timeline'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/paywall'
     | '/progress'
+    | '/recap'
     | '/settings'
     | '/sites'
     | '/timeline'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/paywall'
     | '/progress'
+    | '/recap'
     | '/settings'
     | '/sites'
     | '/timeline'
@@ -252,6 +264,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PaywallRoute: typeof PaywallRoute
   ProgressRoute: typeof ProgressRoute
+  RecapRoute: typeof RecapRoute
   SettingsRoute: typeof SettingsRoute
   SitesRoute: typeof SitesRoute
   TimelineRoute: typeof TimelineRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       path: '/progress'
       fullPath: '/progress'
       preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recap': {
+      id: '/recap'
+      path: '/recap'
+      fullPath: '/recap'
+      preLoaderRoute: typeof RecapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -404,6 +424,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PaywallRoute: PaywallRoute,
   ProgressRoute: ProgressRoute,
+  RecapRoute: RecapRoute,
   SettingsRoute: SettingsRoute,
   SitesRoute: SitesRoute,
   TimelineRoute: TimelineRoute,

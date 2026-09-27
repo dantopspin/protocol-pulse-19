@@ -238,3 +238,51 @@ export function citedSources(text: string, sources: AiSource[]): AiSource[] {
   }
   return out;
 }
+
+/**
+ * Before/after context around one recorded change. Records in the
+ * `days` window before the change are tagged BEFORE, those after AFTER.
+ */
+export function buildCompareContext(
+  s: AppState,
+  eventId: string,
+  days: number,
+): { context: string; categories: string[]; sources: AiSource[]; before: number; after: number } | null {
+  const e = s.events.find((x) => x.id === eventId);
+  if (!e || !s.preferences.ai_sharing) return null;
+  const at = new Date(e.timestamp).getTime();
+  const span = days * 86400000;
+  const sources: AiSource[] = [];
+  const categories = ["Change timeline"];
+  const kind = e.event_type.replace(/_/g, " ");
+  const eref = push(sources, "event", "E", e.id, `${kind} · ${formatDate(e.timestamp)}`);
+  const rows: { t: number; line: string }[] = [];
+  let before = 0;
+  let after = 0;
+  const side = (t: number) => (t < at ? "BEFORE" : "AFTER");
+  const within = (t: number) => t >= at - span && t < at + span;
+  const syms = s.symptoms.filter((x) => within(new Date(x.started_at).getTime())).slice(0, 50);
+  if (syms.length) categories.push("Symptoms");
+  for (const x of syms) {
+    const t = new Date(x.started_at).getTime();
+    const ref = push(sources, "symptom", "S", x.id, `${x.name} · ${formatDate(x.started_at)}`);
+    if (t < at) before++; else after++;
+    rows.push({ t, line: `- [${ref}] ${side(t)} ${formatDate(x.started_at)} SYMPTOM ${x.name}, severity ${x.severity}/10` });
+  }
+  const doses = s.doses.filter((d) => within(new Date(d.logged_at).getTime())).slice(0, 60);
+  if (doses.length) categories.push("Dose history");
+  for (const d of doses) {
+    const t = new Date(d.logged_at).getTime();
+    const ref = push(sources, "dose", "D", d.id, `${compoundName(d.compound_id)} · ${formatDate(d.logged_at)}`);
+    if (t < at) before++; else after++;
+    rows.push({ t, line: `- [${ref}] ${side(t)} ${formatDateTime(d.logged_at)} DOSE ${compoundName(d.compound_id)} ${d.actual_amount} ${d.amount_unit} (${d.status})` });
+  }
+  rows.sort((a, b) => a.t - b.t);
+  return {
+    context: `Change [${eref}] ${formatDateTime(e.timestamp)} ${kind}${e.new_value ? `: ${e.previous_value ?? ""} -> ${e.new_value}` : ""}.\nComparison window: ${days} days before and ${days} days after.\n${rows.map((r) => r.line).join("\n")}`,
+    categories,
+    sources,
+    before,
+    after,
+  };
+}

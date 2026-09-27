@@ -27,7 +27,8 @@ function TimelinePage() {
   return (
     <Screen title="Change Timeline" eyebrow="Protocol Intelligence" back={{ to: "/", label: "Today" }}>
       <Section>
-        <LinkButton to="/recap" variant="secondary" className="mb-5 min-h-[44px]">Recap a date range</LinkButton>
+        <LinkButton to="/recap" variant="secondary" className="mb-3 min-h-[44px]">Recap a date range</LinkButton>
+        <LinkButton to="/compare" variant="secondary" className="mb-5 min-h-[44px]">Compare before and after a change</LinkButton>
         {events.length === 0 ? (
           <EmptyState title="No changes recorded" body="Record a protocol change and enough surrounding data to build a timeline." />
         ) : (

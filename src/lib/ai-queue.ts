@@ -1,6 +1,12 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { askAi, REFUSAL_TEXT } from "./ai.functions";
-import { buildSourcedContext, citedSources, type AiSource } from "./ai-sources";
+import {
+  buildRecapContext,
+  buildSourcedContext,
+  citedSources,
+  type AiSource,
+  type RecapRange,
+} from "./ai-sources";
 import { adherence, compoundName } from "./domain";
 import { formatDate, formatDateTime } from "./format";
 import { getState, setState, uid, type AiQueueItem, type AppState } from "./store";
@@ -185,6 +191,34 @@ export async function askAssistant(question: string): Promise<
 > {
   const s = getState();
   const { context, categories, sources } = buildSourcedContext(s);
+  try {
+    const result = await askAi({ data: { question, context, categories } });
+    if (!result.ok) return result;
+    consumeAllowance();
+    return {
+      ok: true,
+      text: result.text,
+      categories: result.categories,
+      refs: citedSources(result.text, sources),
+    };
+  } catch {
+    return { ok: false, error: "The assistant could not be reached." };
+  }
+}
+
+/** Neutral, chronological, source-linked recap of a date range. */
+export async function requestRecap(range: RecapRange): Promise<
+  | { ok: true; text: string; categories: string[]; refs: AiSource[] }
+  | { ok: false; error: string }
+> {
+  if (!getState().preferences.ai_sharing)
+    return { ok: false, error: "Record sharing is off in Settings." };
+  const { context, categories, sources, count } = buildRecapContext(getState(), range);
+  if (count === 0)
+    return { ok: false, error: "No changes, symptoms, or doses were recorded in this range." };
+  const question =
+    "RECAP: Write a neutral chronological recap of the recorded protocol changes in this range and the symptoms and doses logged around them. " +
+    "Go in date order, oldest first, one short sentence per notable entry, citing every reference. Do not evaluate, interpret, or suggest anything.";
   try {
     const result = await askAi({ data: { question, context, categories } });
     if (!result.ok) return result;

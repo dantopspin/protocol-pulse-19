@@ -52,6 +52,69 @@ function push(
  * Builds referenced record context. Nothing is sent unless the user has
  * enabled assistant sharing in Settings.
  */
+export type RecapRange = { from: string; to: string };
+
+/** Local-day bounds for a YYYY-MM-DD range, inclusive. */
+export function inRange(value: string, range: RecapRange) {
+  const t = new Date(value).getTime();
+  const start = new Date(`${range.from}T00:00:00`).getTime();
+  const end = new Date(`${range.to}T23:59:59.999`).getTime();
+  return t >= start && t <= end;
+}
+
+/**
+ * Chronological (oldest first) context of protocol changes, symptoms and
+ * doses inside a date range, for the neutral recap.
+ */
+export function buildRecapContext(
+  s: AppState,
+  range: RecapRange,
+): { context: string; categories: string[]; sources: AiSource[]; count: number } {
+  if (!s.preferences.ai_sharing) return { context: "", categories: [], sources: [], count: 0 };
+  const sources: AiSource[] = [];
+  const categories: string[] = [];
+  type Row = { t: number; line: string };
+  const rows: Row[] = [];
+  const asc = <T,>(xs: T[], key: (x: T) => string) =>
+    xs.filter((x) => inRange(key(x), range)).sort((a, b) => key(a).localeCompare(key(b)));
+
+  const events = asc(s.events, (e) => e.timestamp).slice(0, 60);
+  if (events.length) categories.push("Change timeline");
+  for (const e of events) {
+    const kind = e.event_type.replace(/_/g, " ");
+    const ref = push(sources, "event", "E", e.id, `${kind} · ${formatDate(e.timestamp)}`);
+    rows.push({
+      t: new Date(e.timestamp).getTime(),
+      line: `- [${ref}] ${formatDateTime(e.timestamp)} CHANGE ${kind}${e.new_value ? `: ${e.previous_value ?? ""} -> ${e.new_value}` : ""}`,
+    });
+  }
+  const symptoms = asc(s.symptoms, (x) => x.started_at).slice(0, 40);
+  if (symptoms.length) categories.push("Symptoms");
+  for (const x of symptoms) {
+    const ref = push(sources, "symptom", "S", x.id, `${x.name} · ${formatDate(x.started_at)}`);
+    rows.push({
+      t: new Date(x.started_at).getTime(),
+      line: `- [${ref}] ${formatDate(x.started_at)} SYMPTOM ${x.name}, severity ${x.severity}/10${x.resolved_at ? `, resolved ${formatDate(x.resolved_at)}` : ", ongoing"}`,
+    });
+  }
+  const doses = asc(s.doses, (d) => d.logged_at).slice(-40);
+  if (doses.length) categories.push("Dose history");
+  for (const d of doses) {
+    const ref = push(sources, "dose", "D", d.id, `${compoundName(d.compound_id)} · ${formatDate(d.logged_at)}`);
+    rows.push({
+      t: new Date(d.logged_at).getTime(),
+      line: `- [${ref}] ${formatDateTime(d.logged_at)} DOSE ${compoundName(d.compound_id)} ${d.actual_amount} ${d.amount_unit} (${d.status})`,
+    });
+  }
+  rows.sort((a, b) => a.t - b.t);
+  return {
+    context: `Range ${range.from} to ${range.to}, oldest first:\n${rows.map((r) => r.line).join("\n")}`,
+    categories,
+    sources,
+    count: rows.length,
+  };
+}
+
 export function buildSourcedContext(s: AppState): {
   context: string;
   categories: string[];

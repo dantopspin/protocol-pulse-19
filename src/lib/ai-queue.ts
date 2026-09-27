@@ -1,6 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { askAi, REFUSAL_TEXT } from "./ai.functions";
 import {
+  buildCompareContext,
   buildRecapContext,
   buildSourcedContext,
   citedSources,
@@ -378,4 +379,27 @@ export function useAiQueueProcessor() {
     }, 800);
     return () => clearTimeout(t);
   }, [online]);
+}
+
+/** Neutral, source-linked before/after observations around one change. */
+export async function requestComparison(eventId: string, days: number): Promise<
+  | { ok: true; text: string; categories: string[]; refs: AiSource[]; before: number; after: number }
+  | { ok: false; error: string }
+> {
+  if (!getState().preferences.ai_sharing) return { ok: false, error: "Record sharing is off in Settings." };
+  const built = buildCompareContext(getState(), eventId, days);
+  if (!built) return { ok: false, error: "That change could not be found." };
+  if (built.before + built.after === 0)
+    return { ok: false, error: "No doses or symptoms were recorded in this window." };
+  const question =
+    "COMPARE: Describe neutrally what was recorded in the BEFORE period, then in the AFTER period, around the cited change. " +
+    "Note counts and severities, say plainly where records are sparse, cite every reference, and do not claim causation or give advice.";
+  try {
+    const result = await askAi({ data: { question, context: built.context, categories: built.categories } });
+    if (!result.ok) return result;
+    consumeAllowance();
+    return { ok: true, text: result.text, categories: result.categories, refs: citedSources(result.text, built.sources), before: built.before, after: built.after };
+  } catch {
+    return { ok: false, error: "The assistant could not be reached." };
+  }
 }

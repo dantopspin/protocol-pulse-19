@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as CalculatorRouteImport } from './routes/calculator'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as HandoffRouteImport } from './routes/handoff'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -42,6 +43,11 @@ const AssistantRoute = AssistantRouteImport.update({
 const CalculatorRoute = CalculatorRouteImport.update({
   id: '/calculator',
   path: '/calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HandoffRoute = HandoffRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
+  '/compare': typeof CompareRoute
   '/handoff': typeof HandoffRoute
   '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
+  '/compare': typeof CompareRoute
   '/handoff': typeof HandoffRoute
   '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/calculator': typeof CalculatorRoute
+  '/compare': typeof CompareRoute
   '/handoff': typeof HandoffRoute
   '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/calculator'
+    | '/compare'
     | '/handoff'
     | '/history'
     | '/onboarding'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/calculator'
+    | '/compare'
     | '/handoff'
     | '/history'
     | '/onboarding'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/calculator'
+    | '/compare'
     | '/handoff'
     | '/history'
     | '/onboarding'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssistantRoute: typeof AssistantRoute
   CalculatorRoute: typeof CalculatorRoute
+  CompareRoute: typeof CompareRoute
   HandoffRoute: typeof HandoffRoute
   HistoryRoute: typeof HistoryRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       path: '/calculator'
       fullPath: '/calculator'
       preLoaderRoute: typeof CalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/handoff': {
@@ -419,6 +439,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssistantRoute: AssistantRoute,
   CalculatorRoute: CalculatorRoute,
+  CompareRoute: CompareRoute,
   HandoffRoute: HandoffRoute,
   HistoryRoute: HistoryRoute,
   OnboardingRoute: OnboardingRoute,

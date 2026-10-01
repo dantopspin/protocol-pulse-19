@@ -68,7 +68,7 @@ function ComparePage() {
             </label>
             <div className="mt-3 grid grid-cols-3 gap-2">
               {WINDOWS.map((w) => (
-                <Button key={w} variant={w === days ? undefined : "secondary"} className="min-h-[44px]" onClick={() => { setDays(w); setResult(null); }}>
+                <Button key={w} variant={w === days ? "primary" : "secondary"} className="min-h-[44px]" onClick={() => { setDays(w); setResult(null); }}>
                   ±{w} days
                 </Button>
               ))}

@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AiQueueBanner } from "../components/AiQueueBanner";
+import { CalculatorProvider } from "../components/AppShell";
 import { useAiQueueProcessor } from "../lib/ai-queue";
 import { hydrate } from "../lib/store";
 
@@ -140,7 +141,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <CalculatorProvider>
+        <Outlet />
+      </CalculatorProvider>
       <AiQueueBanner />
     </QueryClientProvider>
   );

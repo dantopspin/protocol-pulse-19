@@ -248,7 +248,7 @@ export function Sheet({
         className="absolute inset-0 bg-foreground/20"
         onClick={onClose}
       />
-      <div className="rise relative max-h-[92vh] w-full overflow-y-auto border-t border-hairline bg-background pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <div className="rise relative mx-auto max-h-[92vh] w-full max-w-[520px] overflow-y-auto border-t border-hairline bg-background pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <div className="sticky top-0 z-10 flex items-center justify-between gap-4 bg-background page-x py-4 hairline-b">
           <h2 className="text-[17px] font-semibold">{title}</h2>
           <button onClick={onClose} aria-label="Close" className="p-2">

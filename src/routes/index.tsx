@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HeaderActions, Screen } from "@/components/AppShell";
+import { HeaderActions, Screen, useOpenCalculator } from "@/components/AppShell";
 import { Button, Card, EmptyState, LinkButton, Note, Row, Section, StatusTag } from "@/components/kit";
 import { LogDoseSheet } from "@/components/LogDoseSheet";
 import { fmt, toMcg, toMg } from "@/lib/calc";
@@ -234,6 +234,7 @@ function Toast({ text, onDone }: { text: string; onDone: () => void }) {
 
 function NextEntry({ pcId, time, onLog }: { pcId: string; time: string; onLog: () => void }) {
   const state = useStore((s) => s);
+  const openCalculator = useOpenCalculator();
   const pc = state.protocolCompounds.find((p) => p.id === pcId);
   if (!pc) return null;
   const vial = vialFor(state, pc);
@@ -284,9 +285,9 @@ function NextEntry({ pcId, time, onLog }: { pcId: string; time: string; onLog: (
           >
             View details
           </LinkButton>
-          <LinkButton to="/calculator" variant="secondary" full className="min-h-[44px] text-[14px]">
+          <Button variant="secondary" full className="min-h-[44px] text-[14px]" onClick={() => openCalculator?.()}>
             Check calculation
-          </LinkButton>
+          </Button>
         </div>
       </div>
     </Card>

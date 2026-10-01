@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssistantRouteImport } from './routes/assistant'
-import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as HandoffRouteImport } from './routes/handoff'
 import { Route as HistoryRouteImport } from './routes/history'
@@ -38,11 +37,6 @@ const IndexRoute = IndexRouteImport.update({
 const AssistantRoute = AssistantRouteImport.update({
   id: '/assistant',
   path: '/assistant',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CalculatorRoute = CalculatorRouteImport.update({
-  id: '/calculator',
-  path: '/calculator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompareRoute = CompareRouteImport.update({
@@ -134,7 +128,6 @@ const ProtocolsNewRoute = ProtocolsNewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
-  '/calculator': typeof CalculatorRoute
   '/compare': typeof CompareRoute
   '/handoff': typeof HandoffRoute
   '/history': typeof HistoryRoute
@@ -156,7 +149,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
-  '/calculator': typeof CalculatorRoute
   '/compare': typeof CompareRoute
   '/handoff': typeof HandoffRoute
   '/history': typeof HistoryRoute
@@ -179,7 +171,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
-  '/calculator': typeof CalculatorRoute
   '/compare': typeof CompareRoute
   '/handoff': typeof HandoffRoute
   '/history': typeof HistoryRoute
@@ -203,7 +194,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/assistant'
-    | '/calculator'
     | '/compare'
     | '/handoff'
     | '/history'
@@ -225,7 +215,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/assistant'
-    | '/calculator'
     | '/compare'
     | '/handoff'
     | '/history'
@@ -247,7 +236,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/assistant'
-    | '/calculator'
     | '/compare'
     | '/handoff'
     | '/history'
@@ -270,7 +258,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssistantRoute: typeof AssistantRoute
-  CalculatorRoute: typeof CalculatorRoute
   CompareRoute: typeof CompareRoute
   HandoffRoute: typeof HandoffRoute
   HistoryRoute: typeof HistoryRoute
@@ -304,13 +291,6 @@ declare module '@tanstack/react-router' {
       path: '/assistant'
       fullPath: '/assistant'
       preLoaderRoute: typeof AssistantRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/calculator': {
-      id: '/calculator'
-      path: '/calculator'
-      fullPath: '/calculator'
-      preLoaderRoute: typeof CalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compare': {
@@ -438,7 +418,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssistantRoute: AssistantRoute,
-  CalculatorRoute: CalculatorRoute,
   CompareRoute: CompareRoute,
   HandoffRoute: HandoffRoute,
   HistoryRoute: HistoryRoute,

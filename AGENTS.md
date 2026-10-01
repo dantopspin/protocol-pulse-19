@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+Calculator is a globally mounted sheet controlled by AppShell's context, not a route; this keeps it accessible from header utilities and contextual calculation buttons without leaving the current screen.

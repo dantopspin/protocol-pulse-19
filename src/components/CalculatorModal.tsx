@@ -1,26 +1,12 @@
 import { formatDate } from "@/lib/format";
-import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { HeaderActions, Screen } from "@/components/AppShell";
-import { Button, Card, EmptyState, Field, Note, Row, Section, inputClass, selectClass } from "@/components/kit";
+import { Button, Card, EmptyState, Field, Note, Row, Section, Sheet, inputClass, selectClass } from "@/components/kit";
 import { fmt, reconstitute } from "@/lib/calc";
 import { useEntitlement } from "@/lib/entitlements";
 import { setState, uid, useStore } from "@/lib/store";
 import type { AmountUnit, SyringeType } from "@/lib/types";
 
-export const Route = createFileRoute("/calculator")({
-  head: () => ({
-    meta: [
-      { title: "Reconstitution calculator — Peptide Lens" },
-      { name: "description", content: "Convert vial amount and diluent volume into concentration, draw volume, and syringe units." },
-      { property: "og:title", content: "Reconstitution calculator — Peptide Lens" },
-      { property: "og:description", content: "See the formula and every calculation step, not only the result." },
-    ],
-  }),
-  component: CalculatorPage,
-});
-
-function CalculatorPage() {
+export function CalculatorModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { isPro, limits } = useEntitlement();
   const saved = useStore((s) => s.calculations);
   const [vialAmount, setVialAmount] = useState("10");
@@ -47,7 +33,8 @@ function CalculatorPage() {
   const atLimit = !isPro && saved.length >= limits.savedCalculations;
 
   return (
-    <Screen title="Calculator" eyebrow="Reconstitution" right={<HeaderActions />}>
+    <Sheet open={open} onClose={onClose} title="Calculator">
+      <p className="eyebrow page-x pt-5">Reconstitution</p>
       <Section title="Inputs">
         <Field label="Vial amount">
           <div className="flex gap-3">
@@ -152,6 +139,6 @@ function CalculatorPage() {
       <Section>
         <Note>The calculator converts an amount you enter. It never proposes an amount.</Note>
       </Section>
-    </Screen>
+    </Sheet>
   );
 }

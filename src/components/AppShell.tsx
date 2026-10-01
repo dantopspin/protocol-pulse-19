@@ -1,15 +1,32 @@
-import type { ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { CalendarDays, FlaskConical, BookOpen, LineChart, Calculator, Settings, Sparkles } from "lucide-react";
+import { Button } from "@/components/kit";
+import { CalculatorModal } from "@/components/CalculatorModal";
 
 const TABS = [
   { to: "/", label: "Today", icon: CalendarDays },
   { to: "/protocols", label: "Protocols", icon: FlaskConical },
-  { to: "/calculator", label: "Calculator", icon: Calculator },
   { to: "/progress", label: "Progress", icon: LineChart },
   { to: "/library", label: "Library", icon: BookOpen },
 ] as const;
+
+const CalculatorContext = createContext<(() => void) | null>(null);
+
+export function useOpenCalculator() {
+  return useContext(CalculatorContext);
+}
+
+export function CalculatorProvider({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <CalculatorContext.Provider value={() => setOpen(true)}>
+      {children}
+      <CalculatorModal open={open} onClose={() => setOpen(false)} />
+    </CalculatorContext.Provider>
+  );
+}
 
 export function TabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -87,11 +104,15 @@ export function Screen({
 }
 
 export function HeaderActions() {
+  const openCalculator = useOpenCalculator();
   return (
     <>
       <Link to="/assistant" aria-label="AI assistant" className="p-2">
         <Sparkles className="size-[19px]" strokeWidth={1.25} />
       </Link>
+      <Button variant="quiet" aria-label="Calculator" title="Calculator" onClick={() => openCalculator?.()} className="min-h-0 p-2 no-underline">
+        <Calculator className="size-[19px]" strokeWidth={1.25} />
+      </Button>
       <Link to="/settings" aria-label="Settings" className="p-2">
         <Settings className="size-[19px]" strokeWidth={1.25} />
       </Link>

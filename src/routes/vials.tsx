@@ -38,9 +38,11 @@ function VialsPage() {
               <div className="mt-3">
                 <Row label="Compound" value={compoundName(v.compound_id)} mono={false} />
                 <Row label="Original amount" value={`${fmt(v.original_amount, 3)} ${v.amount_unit}`} />
+                {v.storage_notes.startsWith("Label strength: ") && <Row label="Label strength" value={v.storage_notes.slice(16)} mono={false} />}
                 <Row label="Diluent" value={`${fmt(v.diluent_volume_ml, 2)} mL`} />
                 <Row label="Remaining (estimated)" value={`${fmt(v.estimated_remaining_amount, 3)} ${v.amount_unit}`} />
                 <Row label="Batch" value={v.batch_number || "Not recorded"} mono={false} />
+                {v.supplier_or_clinic && <Row label="Supplier or clinic" value={v.supplier_or_clinic} mono={false} />}
                 <Row label="Expiry or discard date" value={v.user_expiry_date || "Not recorded"} className="border-b-0" />
               </div>
             </div>

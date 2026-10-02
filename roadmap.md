@@ -1,0 +1,3 @@
+- [ ] Add vial-label photo scanner in the top controls with AI extraction.
+- [ ] Review and correct extracted vial details before saving inventory.
+- [ ] Verify upload, review, inventory, and mobile modal flow.

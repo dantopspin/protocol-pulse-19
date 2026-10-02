@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { CalendarDays, FlaskConical, BookOpen, LineChart, Calculator, Settings, Sparkles } from "lucide-react";
+import { CalendarDays, FlaskConical, BookOpen, LineChart, Calculator, Settings, Sparkles, ScanLine } from "lucide-react";
 import { Button } from "@/components/kit";
 import { CalculatorModal } from "@/components/CalculatorModal";
+import { VialLabelModal } from "@/components/VialLabelModal";
 
 const TABS = [
   { to: "/", label: "Today", icon: CalendarDays },
@@ -13,17 +14,26 @@ const TABS = [
 ] as const;
 
 const CalculatorContext = createContext<(() => void) | null>(null);
+const LabelContext = createContext<(() => void) | null>(null);
 
 export function useOpenCalculator() {
   return useContext(CalculatorContext);
 }
 
+export function useOpenLabelScanner() {
+  return useContext(LabelContext);
+}
+
 export function CalculatorProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [labelOpen, setLabelOpen] = useState(false);
   return (
     <CalculatorContext.Provider value={() => setOpen(true)}>
-      {children}
-      <CalculatorModal open={open} onClose={() => setOpen(false)} />
+      <LabelContext.Provider value={() => setLabelOpen(true)}>
+        {children}
+        <CalculatorModal open={open} onClose={() => setOpen(false)} />
+        <VialLabelModal open={labelOpen} onClose={() => setLabelOpen(false)} />
+      </LabelContext.Provider>
     </CalculatorContext.Provider>
   );
 }
@@ -105,6 +115,7 @@ export function Screen({
 
 export function HeaderActions() {
   const openCalculator = useOpenCalculator();
+  const openLabelScanner = useOpenLabelScanner();
   return (
     <>
       <Link to="/assistant" aria-label="AI assistant" className="p-2">
@@ -112,6 +123,9 @@ export function HeaderActions() {
       </Link>
       <Button variant="quiet" aria-label="Calculator" title="Calculator" onClick={() => openCalculator?.()} className="min-h-0 p-2 no-underline">
         <Calculator className="size-[19px]" strokeWidth={1.25} />
+      </Button>
+      <Button variant="quiet" aria-label="Scan vial label" title="Scan vial label" onClick={() => openLabelScanner?.()} className="min-h-0 p-2 no-underline">
+        <ScanLine className="size-[19px]" strokeWidth={1.25} />
       </Button>
       <Link to="/settings" aria-label="Settings" className="p-2">
         <Settings className="size-[19px]" strokeWidth={1.25} />

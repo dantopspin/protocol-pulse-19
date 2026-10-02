@@ -4,7 +4,7 @@ import { getState, recordEvent, setState, uid, type AppState } from "./store";
 import type { DoseLog, ProtocolCheckResult, ProtocolCompound, ScheduleRule, Vial } from "./types";
 
 export const compoundName = (id: string | null) =>
-  COMPOUNDS.find((c) => c.id === id)?.name ?? "Custom compound";
+  COMPOUNDS.find((c) => c.id === id)?.name ?? (id?.startsWith("custom:") ? id.slice(7) : "Custom compound");
 
 export function scheduleLabel(rule: ScheduleRule): string {
   switch (rule.kind) {

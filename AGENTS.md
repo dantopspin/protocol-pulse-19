@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 Calculator is a globally mounted sheet controlled by AppShell's context, not a route; this keeps it accessible from header utilities and contextual calculation buttons without leaving the current screen.
+
+Vial-label scanning is a globally mounted sheet; it sends a resized image to a server-only AI Gateway helper and saves only explicitly reviewed label fields into local inventory, never the image, to prevent inferred strength from becoming a dose or inventory amount.

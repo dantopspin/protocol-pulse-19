@@ -10,6 +10,8 @@ export const Route = createFileRoute("/library/$compoundId")({
       { name: "description", content: "Mechanism summary, half-life reference, regulatory status, and evidence quality." },
       { property: "og:title", content: "Compound profile — Peptide Lens" },
       { property: "og:description", content: "Educational reference separated from your active protocol." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CompoundProfile,

@@ -21,6 +21,8 @@ export const Route = createFileRoute("/onboarding")({
         property: "og:description",
         content: "Eleven short steps to record an existing protocol accurately.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Onboarding,

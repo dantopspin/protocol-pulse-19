@@ -17,6 +17,8 @@ export const Route = createFileRoute("/progress")({
       { name: "description", content: "Adherence, weight, metrics, symptoms, and change overlays across your recorded history." },
       { property: "og:title", content: "Progress — Peptide Lens" },
       { property: "og:description", content: "Longitudinal records with restrained, non-causal summaries." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProgressPage,

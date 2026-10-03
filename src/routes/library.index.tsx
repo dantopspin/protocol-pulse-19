@@ -11,6 +11,8 @@ export const Route = createFileRoute("/library/")({
       { name: "description", content: "Educational compound profiles with category, regulatory status, mechanism, and half-life references." },
       { property: "og:title", content: "Compound library — Peptide Lens" },
       { property: "og:description", content: "Non-personalized educational reference material, clearly labeled." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LibraryPage,

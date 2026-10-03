@@ -11,6 +11,8 @@ export const Route = createFileRoute("/weekly-review")({
       { name: "description", content: "Scheduled versus logged entries, vial usage, symptoms, and data needing review." },
       { property: "og:title", content: "Weekly review — Peptide Lens" },
       { property: "og:description", content: "A restrained summary of the last seven days." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: WeeklyReview,

@@ -15,6 +15,8 @@ export const Route = createFileRoute("/vials")({
       { name: "description", content: "Vial status, remaining amount, batch, and projected depletion from recorded entries." },
       { property: "og:title", content: "Vial inventory — Peptide Lens" },
       { property: "og:description", content: "Every vial, its balance, and its recorded history." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: VialsPage,

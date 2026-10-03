@@ -13,6 +13,8 @@ export const Route = createFileRoute("/sites")({
       { name: "description", content: "Front and back site map with recorded use, reactions, and rotation based only on your history." },
       { property: "og:title", content: "Injection site map — Peptide Lens" },
       { property: "og:description", content: "Rotation suggestions derived from recorded use." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SitesPage,

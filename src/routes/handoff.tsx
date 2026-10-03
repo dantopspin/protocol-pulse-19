@@ -30,6 +30,8 @@ export const Route = createFileRoute("/handoff")({
       { name: "description", content: "A provider-readable summary of protocols, changes, adherence, symptoms, and inventory." },
       { property: "og:title", content: "Protocol Handoff — Peptide Lens" },
       { property: "og:description", content: "Prepare a complete record for your next appointment." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Handoff,

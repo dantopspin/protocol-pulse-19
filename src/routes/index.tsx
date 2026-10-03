@@ -31,6 +31,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Your next scheduled entry, vial balance, and site rotation in one view.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: TodayPage,

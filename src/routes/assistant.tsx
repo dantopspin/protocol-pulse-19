@@ -26,6 +26,8 @@ export const Route = createFileRoute("/assistant")({
       { name: "description", content: "Ask questions about your own recorded protocols, doses, vials, sites, and symptoms." },
       { property: "og:title", content: "Assistant — Peptide Lens" },
       { property: "og:description", content: "Grounded in your records. It does not recommend doses." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Assistant,

@@ -11,6 +11,8 @@ export const Route = createFileRoute("/settings")({
       { name: "description", content: "Units, notifications, health data, privacy controls, and legal information." },
       { property: "og:title", content: "Settings — Peptide Lens" },
       { property: "og:description", content: "Local-first data controls and entitlement preview." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SettingsPage,

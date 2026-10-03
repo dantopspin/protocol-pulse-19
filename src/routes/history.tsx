@@ -20,6 +20,8 @@ export const Route = createFileRoute("/history")({
       },
       { property: "og:title", content: "Dose history — Peptide Lens" },
       { property: "og:description", content: "Your complete recorded dose history." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: HistoryPage,

@@ -14,6 +14,8 @@ export const Route = createFileRoute("/protocols/$protocolId")({
       { name: "description", content: "Schedule, calculation, vial connection, and change history for one protocol." },
       { property: "og:title", content: "Protocol detail — Peptide Lens" },
       { property: "og:description", content: "Review the derivation behind every scheduled amount." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProtocolDetail,

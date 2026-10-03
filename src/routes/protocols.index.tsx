@@ -19,6 +19,8 @@ export const Route = createFileRoute("/protocols/")({
         property: "og:description",
         content: "Manage active, paused, and archived protocols and their change history.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProtocolsPage,

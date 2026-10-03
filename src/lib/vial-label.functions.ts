@@ -17,7 +17,7 @@ export type LabelDetails = {
 export type LabelResult = { ok: true; details: LabelDetails } | { ok: false; error: string };
 
 export const readVialLabel = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => inputSchema.parse(input))
+  .validator((input: unknown) => inputSchema.parse(input))
   .handler(async ({ data }): Promise<LabelResult> => {
     if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(data.image)) {
       return { ok: false, error: "Choose a JPG, PNG, or WebP photo." };

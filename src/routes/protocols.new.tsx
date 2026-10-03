@@ -14,6 +14,8 @@ export const Route = createFileRoute("/protocols/new")({
       { name: "description", content: "Record an existing protocol: compound, amount, schedule, source, and vial." },
       { property: "og:title", content: "Protocol builder — Peptide Lens" },
       { property: "og:description", content: "Record instructions you already have. No schedule is generated." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProtocolBuilder,

@@ -12,6 +12,8 @@ export const Route = createFileRoute("/paywall")({
       { name: "description", content: "Unlimited protocols and vials, complete history, Change Impact, exports, and a grounded assistant." },
       { property: "og:title", content: "Peptide Lens Pro" },
       { property: "og:description", content: "See the complete protocol history." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Paywall,

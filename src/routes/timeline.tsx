@@ -15,6 +15,8 @@ export const Route = createFileRoute("/timeline")({
       { name: "description", content: "Every meaningful protocol change with what you recorded before and after it." },
       { property: "og:title", content: "Change Timeline — Peptide Lens" },
       { property: "og:description", content: "Chronological, non-causal record of protocol changes." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: TimelinePage,
